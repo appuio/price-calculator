@@ -1,0 +1,13 @@
+{
+  "name": "price-calculator",
+  "version": "1.0.0",
+  "main": "src/price-calculator.js",
+  "repository": "git@github.com:appuio/price-calculator.git",
+  "author": "Damian Senn <senn@puzzle.ch>",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "prepublish": "npm run build",
+    "build": "sh bin/build.sh"
+  }
+}
