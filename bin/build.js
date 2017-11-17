@@ -35,10 +35,9 @@ function assemble(data) {
 
   source = source.replace('/* DATA_PLACEHOLDER */ {}', `JSON.parse(${data})`);
 
-  const code = source;
-  //const { code } = UglifyES.minify(source, {
-  //  mangle: true
-  //});
+  const { code } = UglifyES.minify(source, {
+    mangle: true
+  });
 
   fs.writeFileSync(
     path.join(DIST_DIR, `price-calculator-${pkg.version}.min.js`),
