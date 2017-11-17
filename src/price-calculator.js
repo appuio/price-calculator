@@ -8,12 +8,10 @@ self.addEventListener('DOMContentLoaded', function() {
     { name: 'large', size: 1024 * 6 },
     { name: 'x-large', size: 1024 * 10 }
   ];
+  var DATA = /* DATA_PLACEHOLDER */ {};
 
   function AppuioRangeSlider(element, options) {
     this.element = element;
-    this.language = options.language;
-    this.calcPrice = options.calcPrice;
-    this.calcCpu = options.calcCpu;
     this.banners = options.banners.slice();
     this.banner = options.banner;
     this.max = options.max;
@@ -34,7 +32,7 @@ self.addEventListener('DOMContentLoaded', function() {
     this.element.max = this.max;
     this.element.min = this.min;
     this.element.step = this.step;
-    this.updateState(this.element.value);
+    this.updateState(Number(this.element.value));
     this.banners.sort(function(a, b) {
       return b.size - a.size;
     });
@@ -42,23 +40,25 @@ self.addEventListener('DOMContentLoaded', function() {
   };
 
   AppuioRangeSlider.prototype.oninput = function oninput(e) {
-    this.updateState(e.target.value);
+    this.updateState(Number(e.target.value));
   };
 
   function updateState(value) {
+    var price = DATA.find(function(price) {
+      return price.key === value;
+    });
     var valueMem = jQuery(this.valueMemory);
     var valueCpu = jQuery(this.valueCpu);
     var valuePricePerDay = jQuery(this.valuePricePerDay);
     var valuePricePerMonth = jQuery(this.valuePricePerMonth);
     var dedicatedInfo = jQuery(this.dedicatedInfo);
-    var price = this.calcPrice(value);
 
-    valuePricePerDay.text(formatPrice(this.language, price));
-    valuePricePerMonth.text(formatPrice(this.language, price * ONE_MONTH));
-    valueMem.text(formatUnit(value));
-    valueCpu.text(this.calcCpu(value));
+    valuePricePerDay.text(price.chfPerDay);
+    valuePricePerMonth.text(price.chfPer30Days);
+    valueMem.text(price.memory);
+    valueCpu.text(price.cpu);
 
-    dedicatedInfo.toggle(value > 10000);
+    dedicatedInfo.toggle(price.dedicatedNodeInfo === true);
     updateActiveBanner.call(this, value);
   }
 
@@ -75,51 +75,11 @@ self.addEventListener('DOMContentLoaded', function() {
     jQuery(this.banner + '--' + banner.name).addClass('active');
   }
 
-  function formatPrice(language, price) {
-    return price.toLocaleString(language, {
-      minimumFractionDigits: 2
-    });
-  }
-
-  function calcPrice(memoryvalue) {
-    return memoryvalue / 512 * 0.92;
-  }
-
-  function calcCpu(memoryvalue) {
-    return 500 + (memoryvalue / 512 - 1) * 200;
-  }
-
-  function formatUnit(value) {
-    return bytesToSize(value * Math.pow(1024, 2), 1);
-  }
-
-  function getDocumentLanguage() {
-    var lang = document.documentElement.lang;
-
-    switch (lang) {
-      case 'de':
-      case 'fr':
-        return lang + '-CH';
-      default:
-        return lang;
-    }
-  }
-
-  function bytesToSize(bytes, precision) {
-    if (!bytes) return '0 Byte';
-    if (bytes === 1) return '1 Byte';
-    var i = Math.floor(Math.log(bytes) / Math.log(1024));
-    return (bytes / Math.pow(1024, i)).toFixed(precision) + ' ' + SIZES[i];
-  }
-
   var DEFAULT_OPTIONS = {
     updateState: updateState,
     min: 512,
     max: 20480,
     step: 512,
-    language: getDocumentLanguage(),
-    calcPrice: calcPrice,
-    calcCpu: calcCpu,
     valueMemory: '.memoryvalue',
     valueCpu: '.cpuvalue',
     valuePricePerDay: '.pricevalueperday',
