@@ -20,6 +20,10 @@ self.addEventListener('DOMContentLoaded', function() {
     this.valuePricePerDay = options.valuePricePerDay;
     this.valuePricePerMonth = options.valuePricePerMonth;
     this.dedicatedInfo = options.dedicatedInfo;
+    this.dataSourceSwitch = options.dataSourceSwitch;
+    this.dataSource = options.initialDataSource;
+    this.valueDataSource = options.valueDataSource;
+    this.updateDataSource = this.updateDataSource.bind(this);
     this.updateState = options.updateState.bind(this);
     this.oninput = this.oninput.bind(this);
 
@@ -33,8 +37,23 @@ self.addEventListener('DOMContentLoaded', function() {
     this.banners.sort(function(a, b) {
       return b.size - a.size;
     });
+    this.dataSource = this.getSelectedDataSource();
     this.updateState(Number(this.element.value));
+    jQuery(this.dataSourceSwitch).on('change', this.updateDataSource);
     jQuery(this.element).on('input', this.oninput);
+  };
+
+  AppuioRangeSlider.prototype.getSelectedDataSource = function getSelectedDataSource() {
+    let $dataSwitch = jQuery(this.dataSourceSwitch);
+
+    return $dataSwitch.is('select')
+      ? $dataSwitch.val()
+      : $dataSwitch.filter(':checked').val();
+  };
+
+  AppuioRangeSlider.prototype.updateDataSource = function updateDataSource(e) {
+    this.dataSource = e.target.value;
+    this.updateState(Number(this.element.value));
   };
 
   AppuioRangeSlider.prototype.oninput = function oninput(e) {
@@ -57,7 +76,7 @@ self.addEventListener('DOMContentLoaded', function() {
   };
 
   function updateState(value) {
-    var price = DATA.find(function(price) {
+    var price = DATA[this.dataSource].find(function(price) {
       return price.key === value;
     });
     var valueMem = jQuery(this.valueMemory);
@@ -70,6 +89,10 @@ self.addEventListener('DOMContentLoaded', function() {
     valuePricePerMonth.text(price.chfPer30Days);
     valueMem.text(price.memory);
     valueCpu.text(price.cpu);
+    jQuery(this.valueDataSource)
+      .hide()
+      .filter(this.valueDataSource + '--' + this.dataSource)
+      .show();
 
     dedicatedInfo.toggle(price.dedicatedNodeInfo === true);
     this.updateActiveBanner(value);
@@ -77,6 +100,9 @@ self.addEventListener('DOMContentLoaded', function() {
 
   var DEFAULT_OPTIONS = {
     updateState: updateState,
+    initialDataSource: 'appuio',
+    dataSourceSwitch: '[name="appuio-price-source"]',
+    valueDataSource: '.appuio-price-source',
     min: 512,
     max: 20480,
     step: 512,
@@ -99,6 +125,9 @@ self.addEventListener('DOMContentLoaded', function() {
       valuePricePerMonth: $element.data('appuio-value-price-per-month'),
       dedicatedInfo: $element.data('appuio-dedicated-info'),
       bannerClass: $element.data('appuio-banner'),
+      initialDataSource: $element.data('appuio-initial-data-source'),
+      dataSourceSwitch: $element.data('appuio-data-source-switch'),
+      valueDataSource: $element.data('appuio-data-source'),
       max: element.max,
       min: element.min,
       step: element.step

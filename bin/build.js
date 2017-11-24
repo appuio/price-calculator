@@ -6,9 +6,20 @@ const UglifyES = require('uglify-es');
 const Sandbox = require('sandbox');
 const pkg = require('../package.json');
 
-const DATA_URL =
-  'https://vshn-portal-vt-574-flexible-backend.appuioapp.ch' +
-  '/openshift/products/appuio%20public/_flexible-prices.js';
+const DATA_SOURCES = [
+  {
+    key: 'appuio',
+    url:
+      'https://vshn-portal-vt-574-flexible-backend.appuioapp.ch' +
+      '/openshift/products/appuio%20public/_flexible-prices.js'
+  },
+  {
+    key: 'aws',
+    url:
+      'https://vshn-portal-vt-574-flexible-backend.appuioapp.ch' +
+      '/openshift/products/appuio%20public/_flexible-prices.js'
+  }
+];
 
 const PROJECT_ROOT = path.join(__dirname, '..');
 const SRC_DIR = path.join(PROJECT_ROOT, 'src');
@@ -18,12 +29,26 @@ main().then(null, console.error);
 
 async function main() {
   resetDist();
-  const prices = await fetchAppuioPrices();
+  const prices = await fetchPrices();
   assemble(prices);
 }
 
-async function fetchAppuioPrices() {
-  const res = await fetch(DATA_URL).then(res => res.text());
+async function fetchPrices() {
+  const sourcesPrices = await Promise.all(
+    DATA_SOURCES.map(async src => {
+      const sourcePrices = await fetchSourcePrices(src.url);
+      return [src.key, JSON.parse(sourcePrices.slice(1, -1))];
+    })
+  );
+
+  return sourcesPrices.reduce((prices, [key, sourcePrices]) => {
+    prices[key] = sourcePrices;
+    return prices;
+  }, {});
+}
+
+async function fetchSourcePrices(url) {
+  const res = await fetch(url).then(res => res.text());
   const resJsObject = await runJS(res);
   return await runJS(`JSON.stringify(${resJsObject}.prices)`);
 }
@@ -33,7 +58,10 @@ function assemble(data) {
     .readFileSync(path.join(SRC_DIR, 'price-calculator.js'))
     .toString();
 
-  source = source.replace('/* DATA_PLACEHOLDER */ {}', `JSON.parse(${data})`);
+  source = source.replace(
+    '/* DATA_PLACEHOLDER */ {}',
+    `JSON.parse('${JSON.stringify(data)}')`
+  );
 
   const { code } = UglifyES.minify(source, {
     mangle: true

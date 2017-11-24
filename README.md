@@ -16,6 +16,12 @@ The following options through data attributes are supported:
     Element to update the current price per month
 - `data-appuio-dedicated-info` (default: '.offers-package-dedicated-info'):
     Element to show once we recommend a dedicated appuio instance
+- `data-appuio-initial-data-source` (default: 'appuio'):
+    The default data source to use
+- `data-appuio-data-source-switch` (default: '[name="appuio-price-source"]'):
+    Elements (radios or select) to select the data source
+- `data-appuio-data-source` (default: '.appuio-price-source'):
+    Class prefix to show/hide the current price source
 - `data-appuio-banner` (default: '.offers-package'):
     Elements to toggle the active state based on slider position
 
@@ -40,6 +46,12 @@ you can use the jQuery API:
 - `updateState` (default: function):
     The function to call and update the DOM each time the slider
     value changes
+- `initialDataSource` (default: 'appuio'):
+    The data source to use
+- `dataSourceSwitch` (default: '[name="appuio-price-source"]'):
+    Elements (radios or select) to select the data source
+- `valueDataSource` (default: '.appuio-price-source'):
+    Class prefix to show/hide the current price source
 - `min` (default: 512):
     The minimal value to select
 - `max` (default: 20480):
