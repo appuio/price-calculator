@@ -1,7 +1,5 @@
 self.addEventListener('DOMContentLoaded', function() {
   var jQuery = self.jQuery;
-  var ONE_MONTH = 30.5;
-  var SIZES = ['Bytes', 'KiB', 'MiB', 'GiB', 'TiB'];
   var BANNERS = [
     { name: 'small', size: 0 },
     { name: 'medium', size: 1024 * 2 },
