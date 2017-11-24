@@ -32,10 +32,10 @@ self.addEventListener('DOMContentLoaded', function() {
     this.element.max = this.max;
     this.element.min = this.min;
     this.element.step = this.step;
-    this.updateState(Number(this.element.value));
     this.banners.sort(function(a, b) {
       return b.size - a.size;
     });
+    this.updateState(Number(this.element.value));
     jQuery(this.element).on('input', this.oninput);
   };
 
