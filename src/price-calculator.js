@@ -43,6 +43,21 @@ self.addEventListener('DOMContentLoaded', function() {
     this.updateState(Number(e.target.value));
   };
 
+  AppuioRangeSlider.prototype.updateActiveBanner = function updateActiveBanner(
+    value
+  ) {
+    var banner = this.banners.find(function(banner) {
+      return banner.size <= value;
+    });
+
+    if (banner === undefined) {
+      return;
+    }
+
+    jQuery(this.banner + '.active').removeClass('active');
+    jQuery(this.banner + '--' + banner.name).addClass('active');
+  };
+
   function updateState(value) {
     var price = DATA.find(function(price) {
       return price.key === value;
@@ -59,20 +74,7 @@ self.addEventListener('DOMContentLoaded', function() {
     valueCpu.text(price.cpu);
 
     dedicatedInfo.toggle(price.dedicatedNodeInfo === true);
-    updateActiveBanner.call(this, value);
-  }
-
-  function updateActiveBanner(value) {
-    var banner = this.banners.find(function(banner) {
-      return banner.size <= value;
-    });
-
-    if (banner === undefined) {
-      return;
-    }
-
-    jQuery(this.banner + '.active').removeClass('active');
-    jQuery(this.banner + '--' + banner.name).addClass('active');
+    this.updateActiveBanner(value);
   }
 
   var DEFAULT_OPTIONS = {
