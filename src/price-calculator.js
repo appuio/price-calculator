@@ -2,9 +2,9 @@ self.addEventListener('DOMContentLoaded', function() {
   var jQuery = self.jQuery;
   var BANNERS = [
     { name: 'small', size: 0 },
-    { name: 'medium', size: 1024 * 2 },
-    { name: 'large', size: 1024 * 6 },
-    { name: 'x-large', size: 1024 * 10 }
+    { name: 'medium', size: 1024 },
+    { name: 'large', size: 1024 * 2 },
+    { name: 'x-large', size: 1024 * 4 }
   ];
   var DATA = /* DATA_PLACEHOLDER */ {};
 
