@@ -10,13 +10,13 @@ const DATA_SOURCES = [
   {
     key: 'appuio',
     url:
-      'https://vshn-portal-vt-574-flexible-backend.appuioapp.ch' +
+      'https://control.vshn.net' +
       '/openshift/products/appuio%20public/_flexible-prices.js'
   },
   {
     key: 'aws',
     url:
-      'https://vshn-portal-vt-574-flexible-backend.appuioapp.ch' +
+      'https://control.vshn.net' +
       '/openshift/products/appuio%20public/_flexible-prices.js'
   }
 ];
