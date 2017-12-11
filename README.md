@@ -72,3 +72,16 @@ you can use the jQuery API:
     The different banner sizes to toggle active state.
 - `banner` (default: '.offers-package'):
     Elements to toggle the active state based on slider position
+
+## Release
+
+Bump version in `package.json` then:
+
+```sh
+yarn build
+git add -f dist
+git commit -m 'Release version X.X.X'
+git tag vX.X.X
+git push
+git push --tags
+```
